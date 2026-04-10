@@ -5,3 +5,4 @@ cryptography
 pytest
 pytest-cov
 httpx
+argon2-cffi
