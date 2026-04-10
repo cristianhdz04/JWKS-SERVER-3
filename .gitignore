@@ -1,0 +1,7 @@
+.pytest_cache
+.coverage
+venv
+tests/__pycache__
+app/__pycache__
+.coverage
+totally_not_my_privateKeys.db
