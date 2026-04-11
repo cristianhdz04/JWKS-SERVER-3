@@ -11,8 +11,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 DB_FILE = "totally_not_my_privateKeys.db"
 
 
-def _get_aes_key() -> bytes:
-    """Read the AES key from the NOT_MY_KEY environment variable."""
+def _get_aes_key():
     env_key = os.environ.get("NOT_MY_KEY")
     if not env_key:
         raise RuntimeError("NOT_MY_KEY environment variable is not set")
@@ -23,8 +22,7 @@ def _get_aes_key() -> bytes:
     return key_bytes[:32]
 
 
-def _encrypt_pem(pem_bytes: bytes) -> bytes:
-    """Encrypt PEM bytes using AES-256-ECB."""
+def _encrypt_pem(pem_bytes) :
     key = _get_aes_key()
     # Pad plaintext to AES block size (16 bytes)
     padder = sym_padding.PKCS7(128).padder()
@@ -34,8 +32,7 @@ def _encrypt_pem(pem_bytes: bytes) -> bytes:
     return encryptor.update(padded) + encryptor.finalize()
 
 
-def _decrypt_pem(encrypted_bytes: bytes) -> bytes:
-    """Decrypt AES-256-ECB encrypted PEM bytes."""
+def _decrypt_pem(encrypted_bytes):
     key = _get_aes_key()
     cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
     decryptor = cipher.decryptor()
@@ -64,7 +61,6 @@ class MyKey:
             self.exp = now - 3600 if is_expired else now + 3600
 
     def serialize(self):
-        """Return PEM bytes to store in DB"""
         return self.private.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.PKCS8,
@@ -72,7 +68,6 @@ class MyKey:
         )
 
     def serialize_encrypted(self) -> bytes:
-        """Return AES-encrypted PEM bytes for DB storage."""
         return _encrypt_pem(self.serialize())
 
 # Initialize DB and table
