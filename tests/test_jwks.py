@@ -24,10 +24,20 @@ def test_old_key_not_inside():
     # get expired key id
     old = get_old_key().id
     # list to store key ids
-    kids = []
-    # save all returned key ids
-    for k in data["keys"]:
-        kids.append(k["kid"])
 
+    # save all returned key ids
+    kids = [k["kid"] for k in data["keys"]]
     # make sure expired key is not there
     assert old not in kids
+
+
+def test_jwks_has_required_fields():
+    """Test that each JWK contains all required fields."""
+    res = client.get("/.well-known/jwks.json")
+    data = res.json()
+    for key in data["keys"]:
+        assert "kty" in key
+        assert "kid" in key
+        assert "n" in key
+        assert "e" in key
+        assert key["kty"] == "RSA"
